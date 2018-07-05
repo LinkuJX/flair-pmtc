@@ -4,13 +4,9 @@
 # User configuration #
 ######################
 
-oauth_public = ""
-oauth_secret = ""
 username = ""
-password = ""
 user_agent = "script:League of Legends flair generator:v1.1 (by /u/TheEnigmaBlade), run by /u/{}".format(username)
 
-subreddit = ""
 sprite_dir = "sprites/"
 css_dir = "css/"
 
@@ -23,49 +19,14 @@ configs = [
 		"expected_size": 48,
 		"save_size":	 24,
 		
-		"css_file":		"champion-flair.css",
-		"css_template":	".flair-{name}::before,a[href=\"#c-{name}\"]{{background-position:-{x}px -{y}px}}",
+		"css_file":		"flair.css",
+		"css_template":	".flair-{name}:after{{background-position:-{x}px -{y}px}}",
 		"css_padding":	(1, 3),
 		
 		"md_file":		"champions.md",
 		"md_template":	"{name}|`[](#c-{key})`|[](#c-{key})",
 		
 		"stylesheet_sprite_name": "champion-flair",
-	},
-	{
-		"enabled": True,
-		"cdn_key": "summoner",
-		
-		"sprite_name":	 "summoners.png",
-		"expected_size": 48,
-		"save_size":	 24,
-		
-		"css_file":		"summoner-flair.css",
-		"css_template":	"a[href=\"#ss-{name}\"]{{background-position:-{x}px -{y}px}}",
-		"css_padding":	(0, 0),
-		
-		"md_file":		"summoners.md",
-		"md_template":	"{name}|`[](#ss-{key})`|[](#ss-{key})",
-		
-		"stylesheet_sprite_name": "summoner-flair"
-	},
-	{
-		"enabled": True,
-		"cdn_key": "item",
-		"cdn_exclude": "(^tower|quick charge|inactive|disabled|Siege Weapon Slot)",
-		
-		"sprite_name":	 "items.png",
-		"expected_size": 48,
-		"save_size":	 24,
-		
-		"css_file":		"item-flair.css",
-		"css_template":	"a[href=\"#i-{name}\"]{{background-position:-{x}px -{y}px}}",
-		"css_padding":	(0, 0),
-		
-		"md_file":		"items.md",
-		"md_template":	"{name}|`[](#i-{key})`|[](#i-{key})",
-		
-		"stylesheet_sprite_name": "item-flair"
 	}
 ]
 
@@ -234,6 +195,7 @@ def generate_css(config, data, sprites, sprite_offsets, scale):
 		return int(val * scale)
 	
 	css = ""
+
 	for name in sorted(list(data.keys())):
 		data_thing = data[name]
 		sprite_offset = sprite_offsets[sprites.index(data_thing["sprite"])]
@@ -330,68 +292,6 @@ def main():
 	
 	# Save flair CSS
 	write_css_file(stylesheet_new_file, new_css)
-	
-	# Connect to reddit
-	r = praw.Reddit(client_id=oauth_public, client_secret=oauth_secret,
-					username=username, password=password,
-					user_agent=user_agent,
-					check_for_updates=False)
-	if r is None:
-		print("No reddit connection, exiting")
-		return
-	
-	# Get stylesheet
-	print("Updating stylesheet")
-	print("  Retrieving...")
-	r_stylesheet = r.subreddit(subreddit).stylesheet
-	stylesheet = r_stylesheet().stylesheet
-	if stylesheet is None:
-		print("Failed to get stylesheet")
-		return
-	
-	# Inject new CSS into stylesheet
-	print("  Injecting new CSS")
-	end = stylesheet.find(stylesheet_inject_mark)
-	if end != -1:
-		end += len(stylesheet_inject_mark)
-		stylesheet = stylesheet[:end]
-	else:
-		stylesheet += "\n" + stylesheet_inject_default
-	stylesheet += "\n" + new_css
-	print("  Writing to file")
-	write_css_file(stylesheet_file, stylesheet)
-	
-	# Set stylesheet
-	if stylesheet_update:
-		print("  Updating on /r/{}".format(subreddit))
-		print("    Uploading images")
-		for stylesheet_sprite_name in new_sprite_paths.keys():
-			sprite_path = new_sprite_paths[stylesheet_sprite_name]
-			print("      {}".format(stylesheet_sprite_name, sprite_path))
-			
-			file_size = os.path.getsize(sprite_path)
-			if file_size > stylesheet_image_max_size*1024:
-				print("      Greater than {} KiB ({:#.2} KiB)".format(stylesheet_image_max_size, file_size/1024))
-				print("      Failed to upload sprite image")
-				continue
-			try:
-				r_stylesheet.upload(stylesheet_sprite_name, sprite_path)
-			except praw.exceptions.PRAWException:
-				print("      Failed to upload sprite image")
-				import traceback
-				traceback.print_exc()
-		
-		print("    Updating stylesheet")
-		if len(stylesheet) > stylesheet_max_size*1024:
-			print("      Greater than {} KiB ({:#.2} KiB)".format(stylesheet_max_size, len(stylesheet) / 1024))
-			print("      Failed to update stylesheet")
-		else:
-			try:
-				r_stylesheet.update(stylesheet)
-			except praw.exceptions.PRAWException:
-				print("      Failed to update stylesheet")
-				import traceback
-				traceback.print_exc()
 	
 	print("Done!")
 
