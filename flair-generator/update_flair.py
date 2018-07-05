@@ -19,7 +19,7 @@ configs = [
 		"expected_size": 48,
 		"save_size":	 24,
 		
-		"css_file":		"flair.css",
+		"css_file":		"flair-tail.css",
 		"css_template":	".flair-{name}:after{{background-position:-{x}px -{y}px}}",
 		"css_padding":	(1, 3),
 		
@@ -219,6 +219,18 @@ def read_css_file(filename):
 	except:
 		return None
 
+def combine_css_file(fnames):
+	print("Combining flair-head with flair-tail")
+	css_outfile = os.path.join(css_dir, "flair.css")
+	with open(css_outfile, 'w') as output:
+		for fname in fnames:
+			fpath = os.path.join(css_dir, fname)
+			with open(fpath) as wfile:
+				for line in wfile:
+					output.write(line)
+	print("Combined.")
+	return 0
+
 def generate_markdown(config, data):
 	md = md_header
 	for name in sorted(list(data.keys())):
@@ -291,8 +303,11 @@ def main():
 		return
 	
 	# Save flair CSS
-	write_css_file(stylesheet_new_file, new_css)
+	# write_css_file(stylesheet_new_file, new_css)
 	
+	css_files = ["flair-head.css", config["css_file"]]
+	combine_css_file(css_files)
+
 	print("Done!")
 
 if __name__ == "__main__":
