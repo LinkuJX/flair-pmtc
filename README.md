@@ -1,1 +1,3 @@
-# PMTC flair generator - forked from theenigmablade's lol-subreddit-tools
+# PMTC flair generator
+
+Forked from [TheEnigmaBlade's subreddit mod tools](https://github.com/TheEnigmaBlade/lol-subreddit-tools)
