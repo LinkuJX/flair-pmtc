@@ -1,0 +1,21 @@
+/* flair-head.css */
+.flair:after {
+    background: url(../img/champions.png) no-repeat scroll 22px 20px transparent;
+    display: inline-block;
+    margin-left: 3px;
+    vertical-align: middle;
+	width: 22px;
+	height: 20px;
+	content: "";
+}
+
+.flair-noban:after{
+	display: inline-block;
+	width: 22px;
+	height: 22px;
+    background-image: url('../img/icons.png');
+    background-position: -44px -44px;
+    font-size: 0;
+}
+
+/* flair-tail.css */

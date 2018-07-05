@@ -195,7 +195,7 @@ def remove_sprites(sprite_files):
 			print("Error: %s file not found" % sprite_file)
 	
 	print("Individual sprite file removal complete.")
-	return 0
+	return 1
 
 # Main
 
@@ -242,7 +242,7 @@ def combine_css_file(fnames):
 				for line in wfile:
 					output.write(line)
 	print("Combined.")
-	return 0
+	return 1
 
 def generate_markdown(config, data):
 	md = md_header
