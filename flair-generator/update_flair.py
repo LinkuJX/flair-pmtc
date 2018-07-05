@@ -184,6 +184,19 @@ def combine_sprites(sprite_files, out_file, scale):
 	
 	return sprite_offsets
 
+def remove_sprites(sprite_files):
+	print("Removing individual sprite files...")
+	sprites = list()
+
+	for sprite_file in sprite_files:
+		if os.path.isfile(sprite_file):
+			os.remove(sprite_file)
+		else:
+			print("Error: %s file not found" % sprite_file)
+	
+	print("Individual sprite file removal complete.")
+	return 0
+
 # Main
 
 import praw
@@ -258,6 +271,9 @@ def main():
 		combined_sprite_path = os.path.join(sprite_dir, config["sprite_name"])
 		sprite_offsets = combine_sprites(sprite_paths, combined_sprite_path, scale)
 		print(sprite_offsets)
+
+		# Remove individual sprites
+		remove_sprites(sprite_paths)
 		
 		# Generate CSS
 		print("Generating CSS")
